@@ -1,0 +1,29 @@
+services:
+  # Web service for db-ui
+  - type: web
+    name: db-ui
+    env: docker
+    repo: https://github.com/YOURUSERNAME/db-ui  # Replace with your fork
+    region: oregon  # Or closest region
+    branch: main
+    dockerfilePath: ./Dockerfile  # Uses repo's existing Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: ~20  # Common for Next.js
+      - key: DATABASE_URL
+        fromDatabase:
+          name: db-ui-db  # Matches postgres service name below
+          property: connectionString
+      - key: GROQ_API_KEY  # Optional, for AI queries
+        generateValue: true  # Or set manually
+      - key: PORT
+        value: 3000
+    plan: free  # Or starter
+
+  # Postgres database (db-ui connects here)
+  - type: pgsql
+    name: db-ui-db
+    region: oregon
+    plan: starter  # Free hobby tier: 90-day limit, renewable
+
